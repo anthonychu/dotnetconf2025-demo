@@ -18,18 +18,6 @@ public class WeatherFunctions
         _httpClient = httpClient;
     }
 
-    [Function(nameof(GetWeatherMcp))]
-    public async Task<string> GetWeatherMcp(
-        [McpToolTrigger("get_weather", "Get current conditions and weather forecast for a location.")]
-        ToolInvocationContext context,
-        [McpToolProperty("latitude", "Latitude of the location.", isRequired: true)]
-        double latitude,
-        [McpToolProperty("longitude", "Longitude of the location.", isRequired: true)]
-        double longitude)
-    {
-        return await FetchWeatherForecastAsync(latitude, longitude);
-    }
-
     [Function(nameof(GetWeatherHttp))]
     public async Task<IActionResult> GetWeatherHttp(
         [HttpTrigger(AuthorizationLevel.Function, "get", Route = "weather")] HttpRequest req)
@@ -50,19 +38,16 @@ public class WeatherFunctions
         return new OkObjectResult(forecast);
     }
 
-    [Function(nameof(GetAuthComplete))]
-    public async Task<IActionResult> GetAuthComplete(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "authcomplete")] HttpRequest req)
+    [Function(nameof(GetWeatherMcp))]
+    public async Task<string> GetWeatherMcp(
+        [McpToolTrigger("get_weather", "Get current conditions and weather forecast for a location.")]
+        ToolInvocationContext context,
+        [McpToolProperty("latitude", "Latitude of the location.", isRequired: true)]
+        double latitude,
+        [McpToolProperty("longitude", "Longitude of the location.", isRequired: true)]
+        double longitude)
     {
-        _logger.LogInformation("Processing authcomplete HTTP request.");
-
-        var htmlContent = await File.ReadAllTextAsync("authcomplete.html");
-        return new ContentResult
-        {
-            Content = htmlContent,
-            ContentType = "text/html",
-            StatusCode = 200
-        };
+        return await FetchWeatherForecastAsync(latitude, longitude);
     }
 
     private async Task<string> FetchWeatherForecastAsync(double latitude, double longitude)
@@ -92,5 +77,20 @@ public class WeatherFunctions
 
             return errorMessage;
         }
+    }
+
+    [Function(nameof(GetAuthComplete))]
+    public async Task<IActionResult> GetAuthComplete(
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "authcomplete")] HttpRequest req)
+    {
+        _logger.LogInformation("Processing authcomplete HTTP request.");
+
+        var htmlContent = await File.ReadAllTextAsync("authcomplete.html");
+        return new ContentResult
+        {
+            Content = htmlContent,
+            ContentType = "text/html",
+            StatusCode = 200
+        };
     }
 }

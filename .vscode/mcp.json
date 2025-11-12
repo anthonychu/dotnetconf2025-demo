@@ -1,7 +1,7 @@
 {
 	"servers": {
 		"my-mcp-server-e39cedf1": {
-			"url": "http://localhost:7071/runtime/webhooks/mcp",
+			"url": "https://func-mcp-n3ppy4r7ucnvo.azurewebsites.net/runtime/webhooks/mcp",
 			"type": "http"
 		}
 	},
