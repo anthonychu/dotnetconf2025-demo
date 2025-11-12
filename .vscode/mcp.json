@@ -1,0 +1,9 @@
+{
+	"servers": {
+		"my-mcp-server-e39cedf1": {
+			"url": "http://localhost:7071/runtime/webhooks/mcp",
+			"type": "http"
+		}
+	},
+	"inputs": []
+}
