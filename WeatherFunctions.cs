@@ -50,6 +50,21 @@ public class WeatherFunctions
         return new OkObjectResult(forecast);
     }
 
+    [Function(nameof(GetAuthComplete))]
+    public async Task<IActionResult> GetAuthComplete(
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "authcomplete")] HttpRequest req)
+    {
+        _logger.LogInformation("Processing authcomplete HTTP request.");
+
+        var htmlContent = await File.ReadAllTextAsync("authcomplete.html");
+        return new ContentResult
+        {
+            Content = htmlContent,
+            ContentType = "text/html",
+            StatusCode = 200
+        };
+    }
+
     private async Task<string> FetchWeatherForecastAsync(double latitude, double longitude)
     {
         try

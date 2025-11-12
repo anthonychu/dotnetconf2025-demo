@@ -21,4 +21,10 @@
     <PackageReference Include="Microsoft.Graph" Version="5.94.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="authcomplete.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

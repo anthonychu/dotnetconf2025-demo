@@ -13,6 +13,8 @@ builder.Services
     .AddApplicationInsightsTelemetryWorkerService()
     .ConfigureFunctionsApplicationInsights();
 
+builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddSingleton<HttpClient>(sp =>
 {
     var client = new HttpClient { BaseAddress = new Uri("https://api.weather.gov") };
