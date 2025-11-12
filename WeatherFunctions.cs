@@ -18,30 +18,39 @@ public class WeatherFunctions
         _httpClient = httpClient;
     }
 
-    [Function("Negotiate")]
-    public IActionResult Run(
-        [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = "signalr/{*path}")] HttpRequest req,
-        [SignalRConnectionInfoInput(HubName = "serverless")] string connectionInfo,
-        string? path)
-    {
-        _logger.LogInformation("C# HTTP trigger function processed a request.");
-        
-        if (path?.Equals("negotiate", StringComparison.OrdinalIgnoreCase) == true)
-        {
-            return new OkObjectResult(connectionInfo);
-        }
-        
-        return new NotFoundResult();
-    }
-
-    [Function(nameof(GetWeather))]
-    public async Task<string> GetWeather(
+    [Function(nameof(GetWeatherMcp))]
+    public async Task<string> GetWeatherMcp(
         [McpToolTrigger("get_weather", "Get current conditions and weather forecast for a location.")]
         ToolInvocationContext context,
         [McpToolProperty("latitude", "Latitude of the location.", isRequired: true)]
         double latitude,
         [McpToolProperty("longitude", "Longitude of the location.", isRequired: true)]
         double longitude)
+    {
+        return await FetchWeatherForecastAsync(latitude, longitude);
+    }
+
+    [Function(nameof(GetWeatherHttp))]
+    public async Task<IActionResult> GetWeatherHttp(
+        [HttpTrigger(AuthorizationLevel.Function, "get", Route = "weather")] HttpRequest req)
+    {
+        _logger.LogInformation("Processing weather HTTP request.");
+
+        if (!double.TryParse(req.Query["latitude"], out var latitude))
+        {
+            return new BadRequestObjectResult("Invalid or missing 'latitude' query parameter.");
+        }
+
+        if (!double.TryParse(req.Query["longitude"], out var longitude))
+        {
+            return new BadRequestObjectResult("Invalid or missing 'longitude' query parameter.");
+        }
+
+        var forecast = await FetchWeatherForecastAsync(latitude, longitude);
+        return new OkObjectResult(forecast);
+    }
+
+    private async Task<string> FetchWeatherForecastAsync(double latitude, double longitude)
     {
         try
         {
